@@ -3,6 +3,7 @@ package hiber;
 import hiber.config.AppConfig;
 import hiber.model.Car;
 import hiber.model.User;
+import hiber.service.CarService;
 import hiber.service.UserService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -15,17 +16,25 @@ public class MainApp {
             new AnnotationConfigApplicationContext(AppConfig.class);
 
       UserService userService = context.getBean(UserService.class);
+      CarService carService = context.getBean(CarService.class);
 
-      userService.add(new User("User1", "Lastname1", "user1@mail.ru",
-              new Car("BMW", 3)));
-      userService.add(new User("User2", "Lastname2", "user2@mail.ru",
-              new Car("BMW", 3)));
-      userService.add(new User("User3", "Lastname3", "user3@mail.ru",
-              new Car("BMW", 5)));
-      userService.add(new User("User4", "Lastname4", "user4@mail.ru",
-              new Car("BMW", 7)));
+      userService.add(new User("User1", "Lastname1", "user1@mail.ru"));
+      userService.add(new User("User2", "Lastname2", "user2@mail.ru"));
+      userService.add(new User("User3", "Lastname3", "user3@mail.ru"));
+      userService.add(new User("User4", "Lastname4", "user4@mail.ru"));
+
+      carService.add(new Car("BMW", 3));
+      carService.add(new Car("BMW", 3));
+      carService.add(new Car("Audi", 4));
+      carService.add(new Car("Nissan", 34));
 
       List<User> users = userService.listUsers();
+      List<Car> cars = carService.listCars();
+
+      for (int i = 0; i < users.size(); i++) {
+         users.get(i).setCar(cars.get(i));
+      }
+
       for (User user : users) {
          System.out.println("Id = "+user.getId());
          System.out.println("First Name = "+user.getFirstName());
@@ -35,9 +44,14 @@ public class MainApp {
          System.out.println();
       }
 
+      for (User user : users) {
+         userService.add(user);
+      }
+
       System.out.println(userService.getUsersByCarModelAndSeries("BMW", 3));
 
       userService.removeAllUsers();
+      carService.removeAllCars();
 
       context.close();
    }
